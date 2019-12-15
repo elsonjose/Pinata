@@ -28,6 +28,7 @@ import com.android.volley.toolbox.Volley;
 
 import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
@@ -39,12 +40,16 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.github.rockerhieu.emojiconize.Emojiconize;
+
 public class MainActivity extends AppCompatActivity {
 
     TextView t;
     Uri uri;
     String receivedText;
     String filepath;
+    String filename;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,25 +79,6 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
-        
-
-        t.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                File file = new File(Environment.getExternalStorageDirectory()+filepath);
-                if(file.exists())
-                {
-                    Toast.makeText(MainActivity.this, "file exists", Toast.LENGTH_SHORT).show();
-                }
-                Uri uri = Uri.parse("file://" + file.getAbsolutePath());
-
-                Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setData(uri);
-                startActivity(intent);
-
-            }
-        });
 
     }
 
@@ -102,7 +88,37 @@ public class MainActivity extends AppCompatActivity {
             uri = imageUris.get(0);
             filepath = getFilePathForN(uri, getApplicationContext());
             t.setText(filepath);
+            String paths[]=  filepath.split("/");
+            filename=paths[paths.length-1];
 
+            try {
+                FileInputStream inputStream = openFileInput(filename);
+                String temp= "";
+                int c;
+                String MainText="";
+                while((c=inputStream.read()) != -1)
+                {
+                    String cc= Character.toString((char)c);
+                    if(!cc.equals("\n"))
+                    {
+                        temp = temp + Character.toString((char)c);
+
+                    }
+                    else
+                    {
+                        MainText=MainText + temp.substring(temp.lastIndexOf(":") + 1);
+                    }
+
+
+
+                }
+                t.setText(MainText);
+
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 
         }
     }

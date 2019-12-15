@@ -6,11 +6,17 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <TextView
-        android:id="@+id/main_txtview"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Hello World!"
-        android:layout_margin="20dp"/>
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/main_txtview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="Hello World!"
+            android:gravity="center_horizontal"/>
+
+    </ScrollView>
 
 </RelativeLayout>
