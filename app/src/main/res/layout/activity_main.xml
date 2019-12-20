@@ -6,17 +6,15 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <TextView
-            android:id="@+id/main_txtview"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="Hello World!"
-            android:gravity="center_horizontal"/>
-
-    </ScrollView>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="30dp"
+        android:text="Export whatsapp chat without media into this app to get started."
+        android:gravity="center"
+        android:textColor="@color/colorBlack"
+        android:textSize="18sp"
+        android:layout_centerInParent="true"/>
 
 </RelativeLayout>
