@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ExportChatActivity">
+    tools:context=".ExportChatActivity"
+    android:id="@+id/root_message">
 
     <ScrollView
         android:id="@+id/message_scrollview"

@@ -2,6 +2,7 @@ package com.simple.pinata;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -16,9 +17,12 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.GridLayout;
+import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.android.material.snackbar.Snackbar;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -33,13 +37,15 @@ public class ExportChatActivity extends AppCompatActivity {
     private Uri uri;
     private String filepath,filename;
     private TextView MessageTextView;
-    private Dialog progressDialog;
     private ScrollView mScrollView;
+    private RelativeLayout RootMessageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_export_chat);
+
+        RootMessageView = findViewById(R.id.root_message);
 
         MessageTextView = findViewById(R.id.message_textview);
         MessageTextView.setMovementMethod(new ScrollingMovementMethod());
@@ -53,6 +59,7 @@ public class ExportChatActivity extends AppCompatActivity {
             }
         });
 
+        Snackbar.make(RootMessageView,"Please wait until chats are loaded.",Snackbar.LENGTH_LONG).show();
 
 
         Intent receivedIntent = getIntent();
