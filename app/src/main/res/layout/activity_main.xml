@@ -4,17 +4,63 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".MainActivity"
+    android:id="@+id/main_root">
 
-    <TextView
+    <CalendarView
+        android:id="@+id/main_calenderview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_margin="30dp"
-        android:text="Export whatsapp chat without media into this app to get started."
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="30dp"
+        android:theme="@style/CalenderTheme" />
+
+
+    <LinearLayout
+        android:id="@+id/main_linearlayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/main_calenderview"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/main_add_bday_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/curved_gradient"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
+            android:text="Add birthday"
+            android:textColor="@color/colorAccent" />
+
+        <Button
+            android:id="@+id/main_view_bday_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:background="@drawable/curved_gradient"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
+            android:text="View birthday"
+            android:textColor="@color/colorAccent" />
+
+    </LinearLayout>
+
+
+    <TextView
+        android:id="@+id/main_info_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="20dp"
         android:gravity="center"
+        android:text="Export whatsapp chat without media into Piñata to get started."
         android:textColor="@color/colorBlack"
-        android:textSize="18sp"
-        android:layout_centerInParent="true"/>
+        android:textSize="15sp" />
 
 </RelativeLayout>
