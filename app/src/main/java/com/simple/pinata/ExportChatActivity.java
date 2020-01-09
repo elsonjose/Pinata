@@ -24,18 +24,20 @@ import android.widget.Toast;
 
 import com.google.android.material.snackbar.Snackbar;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 public class ExportChatActivity extends AppCompatActivity {
 
     private Uri uri;
-    private String filepath,filename;
+    private String filepath, filename;
     private TextView MessageTextView;
     private ScrollView mScrollView;
     private RelativeLayout RootMessageView;
@@ -50,16 +52,14 @@ public class ExportChatActivity extends AppCompatActivity {
         MessageTextView = findViewById(R.id.message_textview);
         MessageTextView.setMovementMethod(new ScrollingMovementMethod());
 
-        mScrollView= findViewById(R.id.message_scrollview);
-        mScrollView.post(new Runnable()
-        {
-            public void run()
-            {
+        mScrollView = findViewById(R.id.message_scrollview);
+        mScrollView.post(new Runnable() {
+            public void run() {
                 mScrollView.smoothScrollTo(0, MessageTextView.getTop());
             }
         });
 
-        Snackbar.make(RootMessageView,"Please wait until chats are loaded.",Snackbar.LENGTH_LONG).show();
+        Snackbar.make(RootMessageView, "Please wait until chats are loaded.", Snackbar.LENGTH_LONG).show();
 
 
         Intent receivedIntent = getIntent();
@@ -89,36 +89,29 @@ public class ExportChatActivity extends AppCompatActivity {
         if (imageUris != null) {
             uri = imageUris.get(0);
             filepath = getFilePathForN(uri, getApplicationContext());
-            String paths[]=  filepath.split("/");
-            filename=paths[paths.length-1];
+            String paths[] = filepath.split("/");
+            filename = paths[paths.length - 1];
 
+            BufferedReader reader = null;
 
             try {
                 FileInputStream inputStream = openFileInput(filename);
-                int c;
-                String RevisedString="",temp= "",orgString= "";
-                while((c=inputStream.read()) != -1)
-                {
-
-                    String cc= Character.toString((char)c);
-
-                    orgString=orgString+Character.toString((char)c);
-
-                    if(!cc.equals("\n"))
+                reader = new BufferedReader(new InputStreamReader(inputStream));
+                String sinleLine ="",messages="";
+                String line = reader.readLine();
+                while(line != null){
+                    if(line.contains(":") && !line.contains("Tap for more info."))
                     {
-                        temp = temp + Character.toString((char)c);
-
+                        if(line.contains("-"))
+                        {
+                            sinleLine=line.substring(line.indexOf("-") + 1);
+                            messages+=sinleLine.substring(sinleLine.indexOf(":")+1);
+                        }
                     }
-                    else
-                    {
-                        RevisedString=RevisedString + temp.substring(temp.lastIndexOf(":") + 1);
-                    }
-
+                    line = reader.readLine();
                 }
-
-
-                String messages = orgString.trim();
-                MessageTextView.setText(messages);
+                messages.replace("<Media omitted>","");
+                MessageTextView.setText(messages.trim());
 
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
