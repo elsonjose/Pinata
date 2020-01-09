@@ -1,28 +1,28 @@
 package com.simple.pinata;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
-import android.app.AlertDialog;
-import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.OpenableColumns;
-import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
-import android.widget.GridLayout;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.ScrollView;
-import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.google.android.material.snackbar.Snackbar;
+import com.simple.pinata.Helper.MaskModel;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -33,14 +33,19 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.List;
 
 public class ExportChatActivity extends AppCompatActivity {
 
     private Uri uri;
     private String filepath, filename;
-    private TextView MessageTextView;
-    private ScrollView mScrollView;
     private RelativeLayout RootMessageView;
+    private String messageString ="";
+    private RecyclerView ExportRecyclerview;
+    private Button ExportPreviewBtn;
+    private List<MaskModel> MaskList;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,18 +53,23 @@ public class ExportChatActivity extends AppCompatActivity {
         setContentView(R.layout.activity_export_chat);
 
         RootMessageView = findViewById(R.id.root_message);
+        ExportRecyclerview = findViewById(R.id.export_recyclerview);
+        ExportRecyclerview.setHasFixedSize(true);
+        ExportRecyclerview.setLayoutManager(new GridLayoutManager(this,2));
+        ExportPreviewBtn = findViewById(R.id.export_preview_btn);
 
-        MessageTextView = findViewById(R.id.message_textview);
-        MessageTextView.setMovementMethod(new ScrollingMovementMethod());
+        //Snackbar.make(RootMessageView, "Please wait until chats are loaded.", Snackbar.LENGTH_LONG).show();
 
-        mScrollView = findViewById(R.id.message_scrollview);
-        mScrollView.post(new Runnable() {
-            public void run() {
-                mScrollView.smoothScrollTo(0, MessageTextView.getTop());
-            }
-        });
+        MaskList = new ArrayList<>();
+        MaskList.add(new MaskModel("Batman",R.drawable.batman_mask,0));
+        MaskList.add(new MaskModel("Gentleman",R.drawable.gentleman_mask,0));
+        MaskList.add(new MaskModel("Joker",R.drawable.joker_mask,0));
+        MaskList.add(new MaskModel("Love",R.drawable.love_mask,0));
+        MaskList.add(new MaskModel("Storm Trooper",R.drawable.stormtrooper_mask,0));
+        MaskList.add(new MaskModel("User Choice",R.drawable.ic_add,1));
 
-        Snackbar.make(RootMessageView, "Please wait until chats are loaded.", Snackbar.LENGTH_LONG).show();
+        MaskAdapter maskAdapter = new MaskAdapter();
+        ExportRecyclerview.setAdapter(maskAdapter);
 
 
         Intent receivedIntent = getIntent();
@@ -82,6 +92,64 @@ public class ExportChatActivity extends AppCompatActivity {
 
         }
 
+        ExportPreviewBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Snackbar.make(RootMessageView, "To do.", Snackbar.LENGTH_LONG).show();
+
+            }
+        });
+
+    }
+
+    public class MaskAdapter extends RecyclerView.Adapter<MaskAdapter.MaskViewHolder>
+    {
+
+        @NonNull
+        @Override
+        public MaskAdapter.MaskViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            return new MaskAdapter.MaskViewHolder(LayoutInflater.from(getApplicationContext()).inflate(R.layout.export_mask_layout,parent,false));
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull MaskAdapter.MaskViewHolder holder, final int position) {
+
+            Glide.with(getApplicationContext()).load(MaskList.get(position).getId()).into(holder.MaskImageview);
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    if(MaskList.get(position).getType() == 0)
+                    {
+                        Snackbar.make(RootMessageView, MaskList.get(position).getName(), Snackbar.LENGTH_LONG).show();
+                    }
+                    else
+                    {
+                        Snackbar.make(RootMessageView, "To do.", Snackbar.LENGTH_LONG).show();
+                    }
+
+                }
+            });
+
+
+        }
+
+        @Override
+        public int getItemCount() {
+            return MaskList.size();
+        }
+
+        public class MaskViewHolder extends RecyclerView.ViewHolder {
+
+            ImageView MaskImageview;
+
+            public MaskViewHolder(@NonNull View itemView) {
+                super(itemView);
+
+                MaskImageview = itemView.findViewById(R.id.export_mask_imageview);
+            }
+        }
     }
 
     void handleSendMultipleImages(Intent intent) {
@@ -97,7 +165,7 @@ public class ExportChatActivity extends AppCompatActivity {
             try {
                 FileInputStream inputStream = openFileInput(filename);
                 reader = new BufferedReader(new InputStreamReader(inputStream));
-                String sinleLine ="",messages="";
+                String sinleLine ="";
                 String line = reader.readLine();
                 while(line != null){
                     if(line.contains(":") && !line.contains("Tap for more info."))
@@ -105,13 +173,12 @@ public class ExportChatActivity extends AppCompatActivity {
                         if(line.contains("-"))
                         {
                             sinleLine=line.substring(line.indexOf("-") + 1);
-                            messages+=sinleLine.substring(sinleLine.indexOf(":")+1);
+                            messageString +=sinleLine.substring(sinleLine.indexOf(":")+1);
                         }
                     }
                     line = reader.readLine();
                 }
-                messages.replace("<Media omitted>","");
-                MessageTextView.setText(messages.trim());
+                messageString.replace("<Media omitted>","");
 
             } catch (FileNotFoundException e) {
                 e.printStackTrace();

@@ -2,28 +2,44 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root_message"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ExportChatActivity"
-    android:id="@+id/root_message">
+    android:background="#ffffff">
 
-    <ScrollView
-        android:id="@+id/message_scrollview"
-        android:layout_width="fill_parent"
+    <TextView
+        android:id="@+id/export_header"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:fillViewport="true"
-        android:scrollbars="vertical"
-        >
+        android:gravity="center"
+        android:text="Select any one of the following masks. Click next for selecting one at random or upload one."
+        android:textColor="@color/colorBlack"
+        android:textSize="14sp"
+        android:layout_marginTop="5dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"/>
 
-        <TextView
-            android:id="@+id/message_textview"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_weight="1.0"
-            android:padding="4dp"
-            android:text="Chat"
-            android:textColor="@color/colorBlack"
-            android:textSize="14sp" />
-    </ScrollView>
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/export_recyclerview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/export_header"
+        android:layout_above="@id/export_preview_btn"
+        android:layout_marginBottom="5dp"
+        android:layout_marginTop="5dp"/>
+
+    <Button
+        android:id="@+id/export_preview_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:text="Preview"
+        android:background="@drawable/curved_gradient"
+        android:textColor="#ffffff"
+        android:layout_marginBottom="5dp"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"/>
 
 </RelativeLayout>
