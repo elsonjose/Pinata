@@ -13,6 +13,9 @@
         <item name="colorAccent">@color/colorPrimary</item>
     </style>
 
-
+    <style name="BottomUpSlideDialogAnimation">
+        <item name="android:windowEnterAnimation">@anim/slide_up</item>
+        <item name="android:windowExitAnimation">@anim/slide_bottom</item>
+    </style>
 
 </resources>

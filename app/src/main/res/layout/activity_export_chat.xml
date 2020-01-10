@@ -8,38 +8,86 @@
     tools:context=".ExportChatActivity"
     android:background="#ffffff">
 
-    <TextView
-        android:id="@+id/export_header"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:text="Select any one of the following masks. Click next for selecting one at random or upload one."
-        android:textColor="@color/colorBlack"
-        android:textSize="14sp"
-        android:layout_marginTop="5dp"
-        android:layout_marginStart="10dp"
-        android:layout_marginEnd="10dp"/>
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/export_recyclerview"
+    <com.simple.pinata.Helper.PaintView
+        android:id="@+id/export_paintview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/export_header"
-        android:layout_above="@id/export_preview_btn"
-        android:layout_marginBottom="5dp"
-        android:layout_marginTop="5dp"/>
+        android:layout_above="@id/export_bottom_nav"/>
 
-    <Button
-        android:id="@+id/export_preview_btn"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/export_bottom_nav"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
+        android:orientation="horizontal"
         android:layout_alignParentBottom="true"
-        android:text="Preview"
-        android:background="@drawable/curved_gradient"
-        android:textColor="#ffffff"
-        android:layout_marginBottom="5dp"
-        android:paddingStart="10dp"
-        android:paddingEnd="10dp"/>
+        android:background="#1c1c1c">
+
+        <ImageButton
+            android:id="@+id/export_mask_back_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_arrow_back"
+            android:padding="5dp"
+            android:background="@android:color/transparent"
+            android:layout_weight="1"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"/>
+
+        <ImageButton
+            android:id="@+id/export_mask_brush_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_brush"
+            android:padding="5dp"
+            android:background="@android:color/transparent"
+            android:layout_weight="1"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"/>
+
+        <ImageButton
+            android:id="@+id/export_mask_undo_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_undo"
+            android:padding="5dp"
+            android:background="@android:color/transparent"
+            android:layout_weight="1"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"/>
+
+        <ImageButton
+            android:id="@+id/export_mask_redo_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_redo"
+            android:padding="5dp"
+            android:background="@android:color/transparent"
+            android:layout_weight="1"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"/>
+
+        <ImageButton
+            android:id="@+id/export_mask_preview_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_preview"
+            android:padding="5dp"
+            android:background="@android:color/transparent"
+            android:layout_weight="1"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"/>
+
+        <ImageButton
+            android:id="@+id/export_mask_save_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_save"
+            android:padding="5dp"
+            android:background="@android:color/transparent"
+            android:layout_weight="1"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"/>
+
+    </LinearLayout>
 
 </RelativeLayout>

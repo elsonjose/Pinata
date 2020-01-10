@@ -1,29 +1,27 @@
 package com.simple.pinata;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.OpenableColumns;
+import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.LayoutInflater;
+import android.view.Gravity;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ImageView;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.GridLayout;
+import android.widget.ImageButton;
+import android.widget.RadioButton;
 import android.widget.RelativeLayout;
+import android.widget.SeekBar;
 import android.widget.Toast;
-
-import com.bumptech.glide.Glide;
-import com.google.android.material.snackbar.Snackbar;
-import com.simple.pinata.Helper.MaskModel;
-
+import androidx.appcompat.app.AppCompatActivity;
+import com.simple.pinata.Helper.PaintView;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -33,7 +31,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.List;
 
 public class ExportChatActivity extends AppCompatActivity {
 
@@ -41,11 +38,13 @@ public class ExportChatActivity extends AppCompatActivity {
     private String filepath, filename;
     private RelativeLayout RootMessageView;
     private String messageString ="";
-    private RecyclerView ExportRecyclerview;
-    private Button ExportPreviewBtn;
-    private List<MaskModel> MaskList;
+    private PaintView paintView;
+    private ImageButton maskSaveBtn,maskPreviewBtn,maskUndoBtn,maskBackBtn,maskBrushBtn,maskRedoBtn;
 
-
+    private Dialog brushOptionsDialog;
+    private RadioButton typeNormal,typeEmboss,typeBlur;
+    private SeekBar strokeSeekbar;
+    private ImageButton closeDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,24 +52,108 @@ public class ExportChatActivity extends AppCompatActivity {
         setContentView(R.layout.activity_export_chat);
 
         RootMessageView = findViewById(R.id.root_message);
-        ExportRecyclerview = findViewById(R.id.export_recyclerview);
-        ExportRecyclerview.setHasFixedSize(true);
-        ExportRecyclerview.setLayoutManager(new GridLayoutManager(this,2));
-        ExportPreviewBtn = findViewById(R.id.export_preview_btn);
 
-        //Snackbar.make(RootMessageView, "Please wait until chats are loaded.", Snackbar.LENGTH_LONG).show();
+        paintView = (PaintView) findViewById(R.id.export_paintview);
+        DisplayMetrics metrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        paintView.init(metrics);
+        paintView.normal();
 
-        MaskList = new ArrayList<>();
-        MaskList.add(new MaskModel("Batman",R.drawable.batman_mask,0));
-        MaskList.add(new MaskModel("Gentleman",R.drawable.gentleman_mask,0));
-        MaskList.add(new MaskModel("Joker",R.drawable.joker_mask,0));
-        MaskList.add(new MaskModel("Love",R.drawable.love_mask,0));
-        MaskList.add(new MaskModel("Storm Trooper",R.drawable.stormtrooper_mask,0));
-        MaskList.add(new MaskModel("User Choice",R.drawable.ic_add,1));
+        brushOptionsDialogInit();
 
-        MaskAdapter maskAdapter = new MaskAdapter();
-        ExportRecyclerview.setAdapter(maskAdapter);
+        maskSaveBtn = findViewById(R.id.export_mask_save_btn);
+        maskPreviewBtn  = findViewById(R.id.export_mask_preview_btn);
+        maskUndoBtn = findViewById(R.id.export_mask_undo_btn);
+        maskBackBtn = findViewById(R.id.export_mask_back_btn);
+        maskBrushBtn  = findViewById(R.id.export_mask_brush_btn);
+        maskRedoBtn = findViewById(R.id.export_mask_redo_btn);
 
+        maskRedoBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                paintView.redoCanvas();
+
+            }
+        });
+
+        maskUndoBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                paintView.undoCanvas();
+
+            }
+        });
+
+        maskBrushBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+
+                if(!paintView.isEmboss() && !paintView.isBlur())
+                {
+                    typeNormal.setChecked(true);
+                    typeEmboss.setChecked(false);
+                    typeBlur.setChecked(false);
+                }
+                else if(paintView.isEmboss() && !paintView.isBlur())
+                {
+                    typeNormal.setChecked(false);
+                    typeEmboss.setChecked(true);
+                    typeBlur.setChecked(false);
+                }
+                else if(!paintView.isEmboss() && paintView.isBlur())
+                {
+                    typeNormal.setChecked(false);
+                    typeEmboss.setChecked(false);
+                    typeBlur.setChecked(true);
+                }
+
+                strokeSeekbar.setProgress(paintView.getStrokeWidth());
+
+                brushOptionsDialog.show();
+                
+                
+                typeNormal.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                        typeNormal.setChecked(true);
+                        typeEmboss.setChecked(false);
+                        typeBlur.setChecked(false);
+                        paintView.setEmboss(false);
+                        paintView.setBlur(false);
+                    }
+                });
+                
+                typeEmboss.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                        typeNormal.setChecked(false);
+                        typeEmboss.setChecked(true);
+                        typeBlur.setChecked(false);
+                        paintView.setEmboss(true);
+                        paintView.setBlur(false);
+                        
+                    }
+                });
+                
+                typeBlur.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                        typeNormal.setChecked(false);
+                        typeEmboss.setChecked(false);
+                        typeBlur.setChecked(true);
+                        paintView.setEmboss(false);
+                        paintView.setBlur(true);
+                    }
+                });
+
+            }
+        });
 
         Intent receivedIntent = getIntent();
         String receivedAction = receivedIntent.getAction();
@@ -92,65 +175,72 @@ public class ExportChatActivity extends AppCompatActivity {
 
         }
 
-        ExportPreviewBtn.setOnClickListener(new View.OnClickListener() {
+
+
+    }
+
+    private void brushOptionsDialogInit() {
+
+        brushOptionsDialog = new Dialog(this,android.R.style.Theme_Light_NoTitleBar);
+        brushOptionsDialog.setCancelable(true);
+        brushOptionsDialog.setCanceledOnTouchOutside(true);
+        brushOptionsDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        brushOptionsDialog.setContentView(R.layout.brush_export_layout);
+        brushOptionsDialog.getWindow().getAttributes().windowAnimations = R.style.BottomUpSlideDialogAnimation;
+
+        Window brushOptionsDialogwindow = brushOptionsDialog.getWindow();
+        brushOptionsDialogwindow.setGravity(Gravity.BOTTOM);
+        brushOptionsDialogwindow.setLayout(GridLayout.LayoutParams.MATCH_PARENT, GridLayout.LayoutParams.WRAP_CONTENT);
+        brushOptionsDialogwindow.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+        brushOptionsDialogwindow.setDimAmount(0.75f);
+
+        typeNormal = brushOptionsDialog.findViewById(R.id.brush_type_normal_radio_btn);
+        typeEmboss = brushOptionsDialog.findViewById(R.id.brush_type_emboss_radio_btn);
+        typeBlur = brushOptionsDialog.findViewById(R.id.brush_type_blur_radio_btn);
+
+        strokeSeekbar = brushOptionsDialog.findViewById(R.id.brush_export_seekbar);
+
+        closeDialog = brushOptionsDialog.findViewById(R.id.brush_export_closebtn);
+
+        closeDialog.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                Snackbar.make(RootMessageView, "To do.", Snackbar.LENGTH_LONG).show();
+                brushOptionsDialog.dismiss();
+
+            }
+        });
+
+        brushOptionsDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+
+
+                if(!paintView.isEmboss() && !paintView.isBlur())
+                {
+                    paintView.setBlur(false);
+                    paintView.setEmboss(false);
+                }
+                else if(paintView.isEmboss() && !paintView.isBlur())
+                {
+                    paintView.setBlur(false);
+                    paintView.setEmboss(true);
+                }
+                else if(!paintView.isEmboss() && paintView.isBlur())
+                {
+                    paintView.setBlur(true);
+                    paintView.setEmboss(false);
+                }
+
+
+                paintView.setStrokeWidth(strokeSeekbar.getProgress());
+
 
             }
         });
 
     }
 
-    public class MaskAdapter extends RecyclerView.Adapter<MaskAdapter.MaskViewHolder>
-    {
-
-        @NonNull
-        @Override
-        public MaskAdapter.MaskViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            return new MaskAdapter.MaskViewHolder(LayoutInflater.from(getApplicationContext()).inflate(R.layout.export_mask_layout,parent,false));
-        }
-
-        @Override
-        public void onBindViewHolder(@NonNull MaskAdapter.MaskViewHolder holder, final int position) {
-
-            Glide.with(getApplicationContext()).load(MaskList.get(position).getId()).into(holder.MaskImageview);
-            holder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-
-                    if(MaskList.get(position).getType() == 0)
-                    {
-                        Snackbar.make(RootMessageView, MaskList.get(position).getName(), Snackbar.LENGTH_LONG).show();
-                    }
-                    else
-                    {
-                        Snackbar.make(RootMessageView, "To do.", Snackbar.LENGTH_LONG).show();
-                    }
-
-                }
-            });
-
-
-        }
-
-        @Override
-        public int getItemCount() {
-            return MaskList.size();
-        }
-
-        public class MaskViewHolder extends RecyclerView.ViewHolder {
-
-            ImageView MaskImageview;
-
-            public MaskViewHolder(@NonNull View itemView) {
-                super(itemView);
-
-                MaskImageview = itemView.findViewById(R.id.export_mask_imageview);
-            }
-        }
-    }
 
     void handleSendMultipleImages(Intent intent) {
         ArrayList<Uri> imageUris = intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM);
