@@ -44,7 +44,7 @@ public class ExportChatActivity extends AppCompatActivity {
     private Dialog brushOptionsDialog;
     private RadioButton typeNormal,typeEmboss,typeBlur;
     private SeekBar strokeSeekbar;
-    private ImageButton closeDialog;
+    private ImageButton closeDialogBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -155,6 +155,15 @@ public class ExportChatActivity extends AppCompatActivity {
             }
         });
 
+        maskBackBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+
+
+            }
+        });
+
         Intent receivedIntent = getIntent();
         String receivedAction = receivedIntent.getAction();
         String receivedType = receivedIntent.getType();
@@ -200,9 +209,9 @@ public class ExportChatActivity extends AppCompatActivity {
 
         strokeSeekbar = brushOptionsDialog.findViewById(R.id.brush_export_seekbar);
 
-        closeDialog = brushOptionsDialog.findViewById(R.id.brush_export_closebtn);
+        closeDialogBtn = brushOptionsDialog.findViewById(R.id.brush_export_closebtn);
 
-        closeDialog.setOnClickListener(new View.OnClickListener() {
+        closeDialogBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
