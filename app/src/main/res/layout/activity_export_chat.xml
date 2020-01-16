@@ -5,89 +5,15 @@
     android:id="@+id/root_message"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ExportChatActivity"
-    android:background="#ffffff">
+    tools:context=".ExportChatActivity">
 
-    <com.simple.pinata.Helper.PaintView
-        android:id="@+id/export_paintview"
+
+    <ImageView
+        android:id="@+id/export_imageview"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@id/export_bottom_nav"/>
+        android:layout_height="match_parent"/>
 
-    <LinearLayout
-        android:id="@+id/export_bottom_nav"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_alignParentBottom="true"
-        android:background="#1c1c1c">
 
-        <ImageButton
-            android:id="@+id/export_mask_back_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_arrow_back"
-            android:padding="5dp"
-            android:background="@android:color/transparent"
-            android:layout_weight="1"
-            android:layout_marginStart="10dp"
-            android:layout_marginEnd="10dp"/>
 
-        <ImageButton
-            android:id="@+id/export_mask_brush_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_brush"
-            android:padding="5dp"
-            android:background="@android:color/transparent"
-            android:layout_weight="1"
-            android:layout_marginStart="10dp"
-            android:layout_marginEnd="10dp"/>
-
-        <ImageButton
-            android:id="@+id/export_mask_undo_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_undo"
-            android:padding="5dp"
-            android:background="@android:color/transparent"
-            android:layout_weight="1"
-            android:layout_marginStart="10dp"
-            android:layout_marginEnd="10dp"/>
-
-        <ImageButton
-            android:id="@+id/export_mask_redo_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_redo"
-            android:padding="5dp"
-            android:background="@android:color/transparent"
-            android:layout_weight="1"
-            android:layout_marginStart="10dp"
-            android:layout_marginEnd="10dp"/>
-
-        <ImageButton
-            android:id="@+id/export_mask_preview_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_preview"
-            android:padding="5dp"
-            android:background="@android:color/transparent"
-            android:layout_weight="1"
-            android:layout_marginStart="10dp"
-            android:layout_marginEnd="10dp"/>
-
-        <ImageButton
-            android:id="@+id/export_mask_save_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_save"
-            android:padding="5dp"
-            android:background="@android:color/transparent"
-            android:layout_weight="1"
-            android:layout_marginStart="10dp"
-            android:layout_marginEnd="10dp"/>
-
-    </LinearLayout>
 
 </RelativeLayout>

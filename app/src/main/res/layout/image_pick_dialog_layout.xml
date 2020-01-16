@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#3c3c3c"
+    app:cardCornerRadius="10dp">
+
+
+   <RelativeLayout
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content"
+       android:background="#3c3c3c">
+
+       <TextView
+           android:id="@+id/forgotpassword_header"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:layout_centerHorizontal="true"
+           android:text="Image Picker"
+           android:textSize="18sp"
+           android:textStyle="bold"
+           android:textColor="#ffffff"
+           android:layout_marginTop="30dp"
+           />
+
+       <TextView
+           android:id="@+id/forgotpassword_ET"
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           android:layout_marginStart="40dp"
+           android:layout_marginEnd="40dp"
+           android:layout_below="@id/forgotpassword_header"
+           android:gravity="center"
+           android:layout_marginTop="20dp"
+           android:textColor="#ffffff"
+           android:text="Select an image to perform freehand cropping and use it as a mask for your word cloud."/>
+
+       <LinearLayout
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           android:layout_marginStart="40dp"
+           android:layout_marginEnd="40dp"
+           android:layout_centerHorizontal="true"
+           android:layout_below="@id/forgotpassword_ET"
+           android:orientation="horizontal"
+           android:layout_marginBottom="30dp"
+           android:layout_marginTop="10dp">
+
+
+           <Button
+               android:id="@+id/forgotpassword_reset_btn"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:layout_weight="1"
+               android:background="@android:color/transparent"
+               android:text="Yes"
+               android:textColor="#1e88e5"
+               android:layout_marginStart="20dp"
+               android:layout_marginEnd="20dp"/>
+
+           <Button
+               android:id="@+id/forgotpassword_cancel_btn"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:layout_weight="1"
+               android:background="@android:color/transparent"
+               android:text="No"
+               android:textColor="#e53935"
+               android:layout_marginStart="20dp"
+               android:layout_marginEnd="20dp"/>
+
+
+
+       </LinearLayout>
+
+   </RelativeLayout>
+
+
+</androidx.cardview.widget.CardView>

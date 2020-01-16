@@ -2,26 +2,29 @@ package com.simple.pinata;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.OpenableColumns;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.GridLayout;
-import android.widget.ImageButton;
-import android.widget.RadioButton;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.SeekBar;
+import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
-import com.simple.pinata.Helper.PaintView;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -37,14 +40,11 @@ public class ExportChatActivity extends AppCompatActivity {
     private Uri uri;
     private String filepath, filename;
     private RelativeLayout RootMessageView;
-    private String messageString ="";
-    private PaintView paintView;
-    private ImageButton maskSaveBtn,maskPreviewBtn,maskUndoBtn,maskBackBtn,maskBrushBtn,maskRedoBtn;
+    private String messageString = "";
+    private final int SELECT_PHOTO = 1;
+    private ImageView ExportImageView;
+    private Dialog ImagePickerDialog;
 
-    private Dialog brushOptionsDialog;
-    private RadioButton typeNormal,typeEmboss,typeBlur;
-    private SeekBar strokeSeekbar;
-    private ImageButton closeDialogBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,117 +52,7 @@ public class ExportChatActivity extends AppCompatActivity {
         setContentView(R.layout.activity_export_chat);
 
         RootMessageView = findViewById(R.id.root_message);
-
-        paintView = (PaintView) findViewById(R.id.export_paintview);
-        DisplayMetrics metrics = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(metrics);
-        paintView.init(metrics);
-        paintView.normal();
-
-        brushOptionsDialogInit();
-
-        maskSaveBtn = findViewById(R.id.export_mask_save_btn);
-        maskPreviewBtn  = findViewById(R.id.export_mask_preview_btn);
-        maskUndoBtn = findViewById(R.id.export_mask_undo_btn);
-        maskBackBtn = findViewById(R.id.export_mask_back_btn);
-        maskBrushBtn  = findViewById(R.id.export_mask_brush_btn);
-        maskRedoBtn = findViewById(R.id.export_mask_redo_btn);
-
-        maskRedoBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                paintView.redoCanvas();
-
-            }
-        });
-
-        maskUndoBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                paintView.undoCanvas();
-
-            }
-        });
-
-        maskBrushBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-
-                if(!paintView.isEmboss() && !paintView.isBlur())
-                {
-                    typeNormal.setChecked(true);
-                    typeEmboss.setChecked(false);
-                    typeBlur.setChecked(false);
-                }
-                else if(paintView.isEmboss() && !paintView.isBlur())
-                {
-                    typeNormal.setChecked(false);
-                    typeEmboss.setChecked(true);
-                    typeBlur.setChecked(false);
-                }
-                else if(!paintView.isEmboss() && paintView.isBlur())
-                {
-                    typeNormal.setChecked(false);
-                    typeEmboss.setChecked(false);
-                    typeBlur.setChecked(true);
-                }
-
-                strokeSeekbar.setProgress(paintView.getStrokeWidth());
-
-                brushOptionsDialog.show();
-                
-                
-                typeNormal.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-
-                        typeNormal.setChecked(true);
-                        typeEmboss.setChecked(false);
-                        typeBlur.setChecked(false);
-                        paintView.setEmboss(false);
-                        paintView.setBlur(false);
-                    }
-                });
-                
-                typeEmboss.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-
-                        typeNormal.setChecked(false);
-                        typeEmboss.setChecked(true);
-                        typeBlur.setChecked(false);
-                        paintView.setEmboss(true);
-                        paintView.setBlur(false);
-                        
-                    }
-                });
-                
-                typeBlur.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-
-                        typeNormal.setChecked(false);
-                        typeEmboss.setChecked(false);
-                        typeBlur.setChecked(true);
-                        paintView.setEmboss(false);
-                        paintView.setBlur(true);
-                    }
-                });
-
-            }
-        });
-
-        maskBackBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-
-
-            }
-        });
+        ExportImageView = findViewById(R.id.export_imageview);
 
         Intent receivedIntent = getIntent();
         String receivedAction = receivedIntent.getAction();
@@ -185,71 +75,60 @@ public class ExportChatActivity extends AppCompatActivity {
         }
 
 
+        ImagePickerDialog = new Dialog(this);
+        ImagePickerDialog.setContentView(R.layout.image_pick_dialog_layout);
+        ImagePickerDialog.setCanceledOnTouchOutside(false);
+        ImagePickerDialog.setCancelable(false);
+        ImagePickerDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
-    }
+        Button ImageDialogNoBtn = ImagePickerDialog.findViewById(R.id.forgotpassword_cancel_btn);
+        Button ImageDialogYesBtn = ImagePickerDialog.findViewById(R.id.forgotpassword_reset_btn);
 
-    private void brushOptionsDialogInit() {
-
-        brushOptionsDialog = new Dialog(this,android.R.style.Theme_Light_NoTitleBar);
-        brushOptionsDialog.setCancelable(true);
-        brushOptionsDialog.setCanceledOnTouchOutside(true);
-        brushOptionsDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        brushOptionsDialog.setContentView(R.layout.brush_export_layout);
-        brushOptionsDialog.getWindow().getAttributes().windowAnimations = R.style.BottomUpSlideDialogAnimation;
-
-        Window brushOptionsDialogwindow = brushOptionsDialog.getWindow();
-        brushOptionsDialogwindow.setGravity(Gravity.BOTTOM);
-        brushOptionsDialogwindow.setLayout(GridLayout.LayoutParams.MATCH_PARENT, GridLayout.LayoutParams.WRAP_CONTENT);
-        brushOptionsDialogwindow.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
-        brushOptionsDialogwindow.setDimAmount(0.75f);
-
-        typeNormal = brushOptionsDialog.findViewById(R.id.brush_type_normal_radio_btn);
-        typeEmboss = brushOptionsDialog.findViewById(R.id.brush_type_emboss_radio_btn);
-        typeBlur = brushOptionsDialog.findViewById(R.id.brush_type_blur_radio_btn);
-
-        strokeSeekbar = brushOptionsDialog.findViewById(R.id.brush_export_seekbar);
-
-        closeDialogBtn = brushOptionsDialog.findViewById(R.id.brush_export_closebtn);
-
-        closeDialogBtn.setOnClickListener(new View.OnClickListener() {
+        ImageDialogNoBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                brushOptionsDialog.dismiss();
+                ImagePickerDialog.dismiss();
 
             }
         });
 
-        brushOptionsDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+        ImageDialogYesBtn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onDismiss(DialogInterface dialog) {
+            public void onClick(View v) {
 
 
-                if(!paintView.isEmboss() && !paintView.isBlur())
-                {
-                    paintView.setBlur(false);
-                    paintView.setEmboss(false);
-                }
-                else if(paintView.isEmboss() && !paintView.isBlur())
-                {
-                    paintView.setBlur(false);
-                    paintView.setEmboss(true);
-                }
-                else if(!paintView.isEmboss() && paintView.isBlur())
-                {
-                    paintView.setBlur(true);
-                    paintView.setEmboss(false);
-                }
-
-
-                paintView.setStrokeWidth(strokeSeekbar.getProgress());
+                Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+                photoPickerIntent.setType("image/*");
+                startActivityForResult(photoPickerIntent, SELECT_PHOTO);
 
 
             }
         });
 
+        ImagePickerDialog.show();
     }
 
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent imageReturnedIntent) {
+        super.onActivityResult(requestCode, resultCode, imageReturnedIntent);
+
+        switch (requestCode) {
+            case SELECT_PHOTO:
+                if (resultCode == RESULT_OK) {
+                    try {
+                        final Uri imageUri = imageReturnedIntent.getData();
+                        final InputStream imageStream = getContentResolver().openInputStream(imageUri);
+                        final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
+                        ExportImageView.setImageBitmap(selectedImage);
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+        }
+    }
 
     void handleSendMultipleImages(Intent intent) {
         ArrayList<Uri> imageUris = intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM);
@@ -264,20 +143,18 @@ public class ExportChatActivity extends AppCompatActivity {
             try {
                 FileInputStream inputStream = openFileInput(filename);
                 reader = new BufferedReader(new InputStreamReader(inputStream));
-                String sinleLine ="";
+                String sinleLine = "";
                 String line = reader.readLine();
-                while(line != null){
-                    if(line.contains(":") && !line.contains("Tap for more info."))
-                    {
-                        if(line.contains("-"))
-                        {
-                            sinleLine=line.substring(line.indexOf("-") + 1);
-                            messageString +=sinleLine.substring(sinleLine.indexOf(":")+1);
+                while (line != null) {
+                    if (line.contains(":") && !line.contains("Tap for more info.")) {
+                        if (line.contains("-")) {
+                            sinleLine = line.substring(line.indexOf("-") + 1);
+                            messageString += sinleLine.substring(sinleLine.indexOf(":") + 1);
                         }
                     }
                     line = reader.readLine();
                 }
-                messageString.replace("<Media omitted>","");
+                messageString.replace("<Media omitted>", "");
 
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
