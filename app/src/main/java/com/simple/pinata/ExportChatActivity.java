@@ -6,24 +6,33 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Path;
+import android.graphics.Point;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
+import android.graphics.Region;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.OpenableColumns;
+import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.GridLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.simple.pinata.Helper.CropView;
+import com.theartofdev.edmodo.cropper.CropImage;
+import com.theartofdev.edmodo.cropper.CropImageView;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -34,6 +43,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.List;
 
 public class ExportChatActivity extends AppCompatActivity {
 
@@ -41,18 +51,20 @@ public class ExportChatActivity extends AppCompatActivity {
     private String filepath, filename;
     private RelativeLayout RootMessageView;
     private String messageString = "";
-    private final int SELECT_PHOTO = 1;
     private ImageView ExportImageView;
     private Dialog ImagePickerDialog;
+    private Bitmap mBitmap;
+    private CropView mCropView;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_export_chat);
+        setContentView(R.layout.cropview_layout);
 
         RootMessageView = findViewById(R.id.root_message);
-        ExportImageView = findViewById(R.id.export_imageview);
+
+
 
         Intent receivedIntent = getIntent();
         String receivedAction = receivedIntent.getAction();
@@ -84,6 +96,7 @@ public class ExportChatActivity extends AppCompatActivity {
         Button ImageDialogNoBtn = ImagePickerDialog.findViewById(R.id.forgotpassword_cancel_btn);
         Button ImageDialogYesBtn = ImagePickerDialog.findViewById(R.id.forgotpassword_reset_btn);
 
+
         ImageDialogNoBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -97,11 +110,12 @@ public class ExportChatActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
+                CropImage.activity()
+                        .setGuidelines(CropImageView.Guidelines.ON)
+                        .setAspectRatio(1,1)
+                        .start(ExportChatActivity.this);
 
-                Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
-                photoPickerIntent.setType("image/*");
-                startActivityForResult(photoPickerIntent, SELECT_PHOTO);
-
+                ImagePickerDialog.dismiss();
 
             }
         });
@@ -110,23 +124,86 @@ public class ExportChatActivity extends AppCompatActivity {
     }
 
 
+    public void cropImage() {
+
+        setContentView(R.layout.activity_export_chat);
+        ExportImageView = findViewById(R.id.export_imageview);
+
+
+        Bitmap fullScreenBitmap =
+                Bitmap.createBitmap(mCropView.getWidth(), mCropView.getHeight(), mBitmap.getConfig());
+
+        Canvas canvas = new Canvas(fullScreenBitmap);
+
+        Path path = new Path();
+        List<Point> points = mCropView.getPoints();
+        for (int i = 0; i < points.size(); i++) {
+            path.lineTo(points.get(i).x, points.get(i).y);
+        }
+
+        // Cut out the selected portion of the image...
+        Paint paint = new Paint();
+        canvas.drawPath(path, paint);
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+        canvas.drawBitmap(mBitmap, 0, 0, paint);
+
+        // Frame the cut out portion...
+        paint.setColor(Color.WHITE);
+        paint.setStyle(Paint.Style.STROKE);
+        paint.setStrokeWidth(10f);
+        canvas.drawPath(path, paint);
+
+        // Create a bitmap with just the cropped area.
+        Region region = new Region();
+        Region clip = new Region(0, 0, fullScreenBitmap.getWidth(), fullScreenBitmap.getHeight());
+        region.setPath(path, clip);
+        Rect bounds = region.getBounds();
+        Bitmap croppedBitmap =
+                Bitmap.createBitmap(fullScreenBitmap, bounds.left, bounds.top,
+                        bounds.width(), bounds.height());
+
+        ExportImageView.setImageBitmap(croppedBitmap);
+    }
+
+
+
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent imageReturnedIntent) {
-        super.onActivityResult(requestCode, resultCode, imageReturnedIntent);
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
+            CropImage.ActivityResult result = CropImage.getActivityResult(data);
+            if (resultCode == RESULT_OK) {
+                Uri resultUri = result.getUri();
 
-        switch (requestCode) {
-            case SELECT_PHOTO:
-                if (resultCode == RESULT_OK) {
-                    try {
-                        final Uri imageUri = imageReturnedIntent.getData();
-                        final InputStream imageStream = getContentResolver().openInputStream(imageUri);
-                        final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
-                        ExportImageView.setImageBitmap(selectedImage);
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    }
+                try {
 
+                    final InputStream imageStream = getContentResolver().openInputStream(resultUri);
+                    final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
+
+                    DisplayMetrics displayMetrics = new DisplayMetrics();
+                    getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+                    int height = displayMetrics.heightPixels;
+                    int width = displayMetrics.widthPixels;
+
+                    mBitmap=Bitmap.createScaledBitmap(selectedImage, width, width, false);
+
+                    mCropView = new CropView(this, mBitmap);
+                    mCropView.resetView();
+                    LinearLayout layout = findViewById(R.id.layout);
+                    LinearLayout.LayoutParams lp =
+                            new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+                                    LinearLayout.LayoutParams.MATCH_PARENT);
+                    layout.addView(mCropView, lp);
+
+
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
                 }
+
+
+
+            } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
+                Exception error = result.getError();
+            }
         }
     }
 
