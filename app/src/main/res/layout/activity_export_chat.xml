@@ -11,9 +11,54 @@
     <ImageView
         android:id="@+id/export_imageview"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:layout_above="@id/export_bottom_nav"
+        android:background="@color/colorBlack"/>
 
-    
+
+    <LinearLayout
+        android:id="@+id/export_bottom_nav"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true"
+        android:background="#1c1c1c">
+
+        <ImageButton
+            android:id="@+id/export_back_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_arrow_back"
+            android:padding="5dp"
+            android:background="@android:color/transparent"
+            android:layout_weight="1"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"/>
+
+        <ImageButton
+            android:id="@+id/export_preview_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_preview"
+            android:padding="5dp"
+            android:background="@android:color/transparent"
+            android:layout_weight="1"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"/>
+
+        <ImageButton
+            android:id="@+id/export_done_all_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_done_all"
+            android:padding="5dp"
+            android:background="@android:color/transparent"
+            android:layout_weight="1"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"/>
+
+    </LinearLayout>
+
 
 
 

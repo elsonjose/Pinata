@@ -1,11 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
-    android:id="@+id/layout"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal">
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_weight=".9"
+        android:gravity="center"
+        />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Perform freehand cropping of the image you want."
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:textSize="16sp"
+        android:layout_margin="20dp"
+        android:layout_weight="1"
+        />
+
+    <LinearLayout
+        android:id="@+id/export_bottom_nav"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="#1c1c1c">
+
+        <ImageButton
+            android:id="@+id/cropview_pick_image_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_photo"
+            android:padding="5dp"
+            android:background="@android:color/transparent"
+            android:layout_weight="1"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"/>
+
+        <ImageButton
+            android:id="@+id/cropview_reset_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_restore"
+            android:padding="5dp"
+            android:background="@android:color/transparent"
+            android:layout_weight="1"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"/>
+
+
+    </LinearLayout>
+
 
 </LinearLayout>

@@ -23,6 +23,7 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -55,6 +56,7 @@ public class ExportChatActivity extends AppCompatActivity {
     private Dialog ImagePickerDialog;
     private Bitmap mBitmap;
     private CropView mCropView;
+    private ImageButton CropViewResetBtn,CropViewPickNewBtn,ExportBackBtn,ExportPreviewBtn,ExportDoneAllBtn;
 
 
     @Override
@@ -63,8 +65,10 @@ public class ExportChatActivity extends AppCompatActivity {
         setContentView(R.layout.cropview_layout);
 
         RootMessageView = findViewById(R.id.root_message);
+        CropViewPickNewBtn = findViewById(R.id.cropview_pick_image_btn);
+        CropViewResetBtn = findViewById(R.id.cropview_reset_btn);
 
-
+        
 
         Intent receivedIntent = getIntent();
         String receivedAction = receivedIntent.getAction();
@@ -121,6 +125,27 @@ public class ExportChatActivity extends AppCompatActivity {
         });
 
         ImagePickerDialog.show();
+        
+        CropViewResetBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                
+               if(mCropView != null)
+               {
+                   mCropView.resetView();
+               }
+                
+            }
+        });
+        
+        CropViewPickNewBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                
+                ImagePickerDialog.show();
+                
+            }
+        });
     }
 
 
@@ -128,7 +153,38 @@ public class ExportChatActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_export_chat);
         ExportImageView = findViewById(R.id.export_imageview);
+        ExportBackBtn = findViewById(R.id.export_back_btn);
+        ExportPreviewBtn = findViewById(R.id.export_preview_btn);
+        ExportDoneAllBtn = findViewById(R.id.export_done_all_btn);
+        
+        ExportBackBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
+                setContentView(R.layout.cropview_layout);
+                ImagePickerDialog.show();
+
+            }
+        });
+
+        ExportPreviewBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Toast.makeText(ExportChatActivity.this, "todo", Toast.LENGTH_SHORT).show();
+                
+            }
+        });
+        
+        ExportDoneAllBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Toast.makeText(ExportChatActivity.this, "todo", Toast.LENGTH_SHORT).show();
+                
+            }
+        });
+        
 
         Bitmap fullScreenBitmap =
                 Bitmap.createBitmap(mCropView.getWidth(), mCropView.getHeight(), mBitmap.getConfig());
