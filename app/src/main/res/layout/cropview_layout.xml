@@ -29,6 +29,18 @@
         android:textColor="#ffffff"
         />
 
+    <Button
+        android:id="@+id/cropview_change_img_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/curved_gradient"
+        android:layout_below="@id/cropview_overlay"
+        android:layout_centerHorizontal="true"
+        android:text="Change Image"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"
+        android:textColor="#ffffff"
+        android:layout_marginTop="20dp"/>
 
 
 </RelativeLayout>

@@ -107,8 +107,6 @@ public class ExportChatActivity extends AppCompatActivity {
             public void onClick(View v) {
 
                 ImagePickerDialog.dismiss();
-                startActivity(new Intent(ExportChatActivity.this,MainActivity.class));
-                finish();
 
             }
         });
@@ -147,7 +145,28 @@ public class ExportChatActivity extends AppCompatActivity {
             public void onClick(View v) {
 
                 setContentView(R.layout.cropview_layout);
-                ImagePickerDialog.show();
+
+                DisplayMetrics displayMetrics = new DisplayMetrics();
+                getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+                int width = displayMetrics.widthPixels;
+                mCropView = new CropView(ExportChatActivity.this, mBitmap);
+                LinearLayout CoverOverlay = findViewById(R.id.cropview_overlay);
+                ViewGroup.LayoutParams layoutParams = CoverOverlay.getLayoutParams();
+                layoutParams.width = width;
+                layoutParams.height = width;
+                CoverOverlay.setLayoutParams(layoutParams);
+                CoverOverlay.addView(mCropView);
+
+                findViewById(R.id.cropview_change_img_btn).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                        ImagePickerDialog.show();
+
+
+                    }
+                });
+
 
             }
         });
@@ -228,6 +247,15 @@ public class ExportChatActivity extends AppCompatActivity {
                     CoverOverlay.setLayoutParams(layoutParams);
                     CoverOverlay.addView(mCropView);
 
+                    findViewById(R.id.cropview_change_img_btn).setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+
+                            ImagePickerDialog.show();
+
+
+                        }
+                    });
 
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
