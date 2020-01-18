@@ -113,6 +113,7 @@ public class CropView extends View implements View.OnTouchListener {
         paint.setStrokeWidth(5);
         paint.setColor(Color.RED);
 
+
         points = new ArrayList<Point>();
         bfirstpoint = false;
 
@@ -215,15 +216,6 @@ public class CropView extends View implements View.OnTouchListener {
 
     }
 
-    public void fillinPartofPath() {
-        Point point = new Point();
-        point.x = points.get(0).x;
-        point.y = points.get(0).y;
-
-        points.add(point);
-        invalidate();
-    }
-
     public void resetView() {
         points.clear();
         paint.setColor(Color.WHITE);
@@ -233,6 +225,7 @@ public class CropView extends View implements View.OnTouchListener {
         paint.setStyle(Paint.Style.STROKE);
         paint.setStrokeWidth(5);
         paint.setColor(Color.RED);
+        paint.setPathEffect(new DashPathEffect(new float[]{10, 20}, 0));
 
         points = new ArrayList<Point>();
         bfirstpoint = false;

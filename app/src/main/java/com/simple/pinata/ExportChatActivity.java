@@ -22,6 +22,9 @@ import android.provider.OpenableColumns;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -56,19 +59,17 @@ public class ExportChatActivity extends AppCompatActivity {
     private Dialog ImagePickerDialog;
     private Bitmap mBitmap;
     private CropView mCropView;
-    private ImageButton CropViewResetBtn,CropViewPickNewBtn,ExportBackBtn,ExportPreviewBtn,ExportDoneAllBtn;
+    private ImageButton ExportBackBtn,ExportPreviewBtn,ExportDoneAllBtn;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.cropview_layout);
 
         RootMessageView = findViewById(R.id.root_message);
-        CropViewPickNewBtn = findViewById(R.id.cropview_pick_image_btn);
-        CropViewResetBtn = findViewById(R.id.cropview_reset_btn);
-
-        
 
         Intent receivedIntent = getIntent();
         String receivedAction = receivedIntent.getAction();
@@ -106,6 +107,8 @@ public class ExportChatActivity extends AppCompatActivity {
             public void onClick(View v) {
 
                 ImagePickerDialog.dismiss();
+                startActivity(new Intent(ExportChatActivity.this,MainActivity.class));
+                finish();
 
             }
         });
@@ -126,32 +129,14 @@ public class ExportChatActivity extends AppCompatActivity {
 
         ImagePickerDialog.show();
         
-        CropViewResetBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                
-               if(mCropView != null)
-               {
-                   mCropView.resetView();
-               }
-                
-            }
-        });
-        
-        CropViewPickNewBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                
-                ImagePickerDialog.show();
-                
-            }
-        });
+
     }
 
 
     public void cropImage() {
 
         setContentView(R.layout.activity_export_chat);
+
         ExportImageView = findViewById(R.id.export_imageview);
         ExportBackBtn = findViewById(R.id.export_back_btn);
         ExportPreviewBtn = findViewById(R.id.export_preview_btn);
@@ -203,12 +188,6 @@ public class ExportChatActivity extends AppCompatActivity {
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
         canvas.drawBitmap(mBitmap, 0, 0, paint);
 
-        // Frame the cut out portion...
-        paint.setColor(Color.WHITE);
-        paint.setStyle(Paint.Style.STROKE);
-        paint.setStrokeWidth(10f);
-        canvas.drawPath(path, paint);
-
         // Create a bitmap with just the cropped area.
         Region region = new Region();
         Region clip = new Region(0, 0, fullScreenBitmap.getWidth(), fullScreenBitmap.getHeight());
@@ -237,18 +216,17 @@ public class ExportChatActivity extends AppCompatActivity {
 
                     DisplayMetrics displayMetrics = new DisplayMetrics();
                     getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-                    int height = displayMetrics.heightPixels;
                     int width = displayMetrics.widthPixels;
 
                     mBitmap=Bitmap.createScaledBitmap(selectedImage, width, width, false);
 
                     mCropView = new CropView(this, mBitmap);
-                    mCropView.resetView();
-                    LinearLayout layout = findViewById(R.id.layout);
-                    LinearLayout.LayoutParams lp =
-                            new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
-                                    LinearLayout.LayoutParams.MATCH_PARENT);
-                    layout.addView(mCropView, lp);
+                    LinearLayout CoverOverlay = findViewById(R.id.cropview_overlay);
+                    ViewGroup.LayoutParams layoutParams = CoverOverlay.getLayoutParams();
+                    layoutParams.width = width;
+                    layoutParams.height = width;
+                    CoverOverlay.setLayoutParams(layoutParams);
+                    CoverOverlay.addView(mCropView);
 
 
                 } catch (FileNotFoundException e) {
